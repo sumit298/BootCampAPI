@@ -197,3 +197,28 @@ router
   .put(updateBootCampById)
   .delete(deleteBootCampById);
 ```
+
+
+### MiddleWares
+
+In Node.js, `middleware` refers to a critical concept that plays a central role in managing and processing incoming HTTP requests and outgoing HTTP responses. It acts as an intermediary layer between the web server and the application's business logic, allowing developers to add functionalities or perform specific tasks during the request-response lifecycle.
+
+A simple and concise way to explain middleware in Node.js to an interviewer would be:
+
+`Middleware` in Node.js is a layer of code that intercepts and processes HTTP requests and responses in web applications. It allows developers to add various functionalities, such as logging, authentication, error handling, and request parsing, without modifying the core application logic. Middleware functions are executed sequentially, and each middleware can modify the request or response before passing it along to the next middleware or the final request handler.
+
+Node.js middleware is like a helpful assistant that stands between the web server and our application code. It manages incoming requests and outgoing responses, allowing us to add extra features and functionalities without messing up our main application logic. It's like a relay race, where each middleware does its part, passing the baton (the request and response) along the chain until the final handler takes over.
+
+For ex. 
+
+```js
+  
+  const logger = (req: Request, res: Response, next: NextFunction) => {
+    console.log(
+    `${req.method} ${req.protocol}://${req.get("host")}${req.originalUrl} `
+    );
+    next();
+  };
+  app.use(logger)
+
+```
