@@ -220,5 +220,23 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
 app.use(logger);
 ```
 
+### Connection to MongoDB atlas
 
+```js
+import mongoose from "mongoose";
 
+const connectDB = async () => {
+  const conn = await mongoose.connect(`${process.env.MONGODB_URI}`);
+  console.log(`MongoDB Connected: ${conn.connection.host}`);
+};
+```
+
+For handling Error in the Promises, we used
+
+```js
+process.on("unhandledRejection", (err: Error, promise) => {
+  console.log(`Error: ${err.message}`);
+  // close the server and exit the process
+  server.close(() => process.exit(1));
+});
+```
