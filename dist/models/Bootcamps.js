@@ -36,4 +36,70 @@ const BootcampSchema = new mongoose_1.default.Schema({
             "Please add a valid email",
         ],
     },
+    address: {
+        type: String,
+        required: [true, "Please add an address"],
+    },
+    location: {
+        // Geojson Point
+        type: String,
+        enum: ["Point"],
+        // required: true,
+        coordinates: {
+            type: [Number],
+            required: true,
+            index: "2dsphere",
+        },
+        formattedAddress: String,
+        street: String,
+        city: String,
+        state: String,
+        zipcode: String,
+        country: String,
+    },
+    careers: {
+        // Array of Strings
+        type: [String],
+        required: true,
+        enum: [
+            "Web Development",
+            "Mobile Development",
+            "UI/UX",
+            "Data Science",
+            "Machine Learning",
+            "Business",
+            "Other",
+        ],
+    },
+    averageRating: {
+        type: Number,
+        min: [1, "Rating must be atleast 1"],
+        max: [10, "Rating must can not be more than 10"],
+    },
+    averageCost: Number,
+    photo: {
+        type: String,
+        default: "no-photo.jpg",
+    },
+    housing: {
+        type: Boolean,
+        default: false,
+    },
+    jobAssistance: {
+        type: Boolean,
+        default: false,
+    },
+    jobGuarantee: {
+        type: Boolean,
+        default: false,
+    },
+    acceptGi: {
+        type: Boolean,
+        default: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
 });
+exports.default = mongoose_1.default.model("Bootcamp", BootcampSchema);

@@ -13,10 +13,13 @@ dotenv_1.default.config({ path: "./config/config.env" });
 // Connect to database
 (0, db_1.default)();
 const app = (0, express_1.default)();
+// Use body parser
+app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 app.use("/api/v1/bootcamps", bootcamps_1.default);
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => console.log(`Server up and running in ${process.env.NODE_ENV} mode on port ${PORT}.`.yellow.bold));
+const server = app.listen(PORT, () => console.log(`Server up and running in ${process.env.NODE_ENV} mode on port ${PORT}.`
+    .yellow.bold));
 process.on("unhandledRejection", (err, promise) => {
     console.log(`Error: ${err.message}`.red);
     // close the server and exit the process

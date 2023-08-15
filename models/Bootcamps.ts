@@ -40,7 +40,7 @@ const BootcampSchema = new mongoose.Schema({
     // Geojson Point
     type: String,
     enum: ["Point"],
-    required: true,
+    // required: true,
 
     coordinates: {
       type: [Number],
@@ -59,19 +59,19 @@ const BootcampSchema = new mongoose.Schema({
     type: [String],
     required: true,
     enum: [
-      'Web Development',
-      'Mobile Development',
-      'UI/UX',
-      'Data Science',
-      'Machine Learning',
-      'Business',
-      'Other'
-    ]
+      "Web Development",
+      "Mobile Development",
+      "UI/UX",
+      "Data Science",
+      "Machine Learning",
+      "Business",
+      "Other",
+    ],
   },
   averageRating: {
     type: Number,
-    min: [1, 'Rating must be atleast 1'],
-    max: [10, 'Rating must can not be more than 10'],
+    min: [1, "Rating must be atleast 1"],
+    max: [10, "Rating must can not be more than 10"],
   },
   averageCost: Number,
   photo: {
@@ -80,24 +80,24 @@ const BootcampSchema = new mongoose.Schema({
   },
   housing: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  jobAssistance:{
+  jobAssistance: {
     type: Boolean,
-    default: false
+    default: false,
   },
   jobGuarantee: {
     type: Boolean,
-    default: false
-  }, 
+    default: false,
+  },
   acceptGi: {
     type: Boolean,
-    default: false
+    default: false,
   },
   createdAt: {
     type: Date,
-    default: Date.now()
-  }
+    default: Date.now(),
+  },
 });
 
-export default mongoose.model('Bootcamp', BootcampSchema)
+export default mongoose.model("Bootcamp", BootcampSchema);
