@@ -9,7 +9,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const errorHandler = (err, // Adjust the type here
 req, res, next) => {
     // console.log(err.stack);
-    console.log(err);
+    // console.log(err);
     let error;
     // Mongoose bad objectid
     if (err instanceof mongoose_1.default.Error.CastError) {

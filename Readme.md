@@ -476,3 +476,72 @@ export const getBootCamp = async (
   }
 };
 ```
+
+### Async Await Middleware
+
+This middleware function is designed to wrap asynchronous route handlers and simplify error handling for asynchronous operations. It uses the catch method of a resolved promise to catch any errors that might occur within the asynchronous route handler function and pass them to the Express next function for further error handling.
+
+The asyncHandler function accepts a single argument fn, which is the asynchronous route handler function you want to wrap.
+
+Inside the asyncHandler, a new middleware function is created that accepts the standard req, res, and next parameters.
+
+The asynchronous route handler function fn(req, res, next) is called and wrapped in a Promise.resolve() to ensure it returns a promise. This allows you to catch any errors that might occur during its execution.
+
+The .catch(next) part catches any errors that occur within the asynchronous operation and passes them to the Express next function. This way, the error will be caught by your error handling middleware and can be appropriately handled.
+
+```js
+import { NextFunction, Request, Response } from "express";
+
+export const asyncHandler =
+  (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+```
+
+Use it in `bootcamp.ts`
+
+```js
+// @desc    Get all Bootcamps
+// @route   GET /api/v1/bootcamps
+// access   Public
+export const getBootCamps = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const allBootcamp = await Bootcamps.find();
+    res.status(200).json({
+      success: true,
+      count: allBootcamp.length,
+      body: allBootcamp,
+    });
+  }
+);
+
+// @desc    Get single Bootcamp
+// @route   GET /api/v1/bootcamps/:id
+// access   Public
+export const getBootCamp = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const bootcamp = await Bootcamps.findById(req.params.id);
+    if (!bootcamp) {
+      return next(
+        new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      );
+    }
+    res.status(200).json({
+      success: true,
+      body: bootcamp,
+    });
+  }
+);
+```
+
+How to get slug from Bootcamps Schema
+Pre middleware functions are executed one after another, when each middleware calls next.
+
+```js
+BootcampSchema.pre("save", function (next) {
+  if (this.name) {
+    this.slug = slugify(this.name, { lower: true });
+  }
+  next();
+});
+```

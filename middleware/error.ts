@@ -21,7 +21,7 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   // console.log(err.stack);
-  console.log(err);
+  // console.log(err);
   let error: ErrorResponse;
 
   // Mongoose bad objectid

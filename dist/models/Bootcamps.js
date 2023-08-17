@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const slugify_1 = __importDefault(require("slugify"));
 const BootcampSchema = new mongoose_1.default.Schema({
     name: {
         type: String,
@@ -101,5 +102,11 @@ const BootcampSchema = new mongoose_1.default.Schema({
         type: Date,
         default: Date.now(),
     },
+});
+BootcampSchema.pre("save", function (next) {
+    if (this.name) {
+        this.slug = (0, slugify_1.default)(this.name, { lower: true });
+    }
+    next();
 });
 exports.default = mongoose_1.default.model("Bootcamp", BootcampSchema);
