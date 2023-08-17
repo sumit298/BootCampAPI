@@ -5,6 +5,7 @@ import morgan from "morgan";
 import connectDB from "./config/db";
 import "colors";
 dotenv.config({ path: "./config/config.env" });
+import {errorHandler} from './middleware/error';
 
 // Connect to database
 connectDB();
@@ -15,6 +16,8 @@ app.use(express.json());
 
 app.use(morgan("dev"));
 app.use("/api/v1/bootcamps", router);
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000;
 

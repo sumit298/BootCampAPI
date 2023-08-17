@@ -361,3 +361,118 @@ export const deleteBootCamp = async (
   }
 };
 ```
+
+### Custom Error Handling
+
+- Instead of passing message and status code for error by ourself, let's set a custom error handler that does send statuscode and message according to the error occuring.
+
+- We have defined custom class as ErrorResponse that extends Error interface for custom error properties in the `Utils/errorResponse.ts`
+
+```js
+class ErrorResponse extends Error {
+  statusCode: number;
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
+export default ErrorResponse;
+```
+
+- In `MiddleWares/error.ts`
+
+```js
+// Import necessary modules and types
+import { Request, NextFunction, Response } from "express";
+import ErrorResponse from "../utils/errorResponse";
+import mongoose from "mongoose";
+
+// Define a custom interface that extends Error to include additional properties
+export interface ErrnoException extends Error {
+  errno?: number;
+  code?: number;
+  path?: string;
+  syscall?: string;
+  stack?: string;
+}
+
+// Error handling middleware function
+export const errorHandler = (
+  err:
+    | ErrorResponse
+    | mongoose.Error.CastError
+    | ErrnoException
+    | mongoose.Error.ValidationError, // Type union to handle multiple error types
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // Log the error for debugging purposes
+  console.log(err);
+
+  // Declare a variable to hold the error response
+  let error: ErrorResponse;
+
+  // Handle Mongoose "CastError" (invalid object ID)
+  if (err instanceof mongoose.Error.CastError) {
+    const message = `Bootcamp not found with id of ${err.value}`;
+    error = new ErrorResponse(message, 404); // Create a custom error response with a "Not Found" status code
+  }
+  // Handle Mongoose "Duplicate key" error (code 11000)
+  else if ((err as ErrnoException).code === 11000) {
+    const message = "Duplicate field value entered";
+    error = new ErrorResponse(message, 400); // Create a custom error response with a "Bad Request" status code
+  }
+  // Handle Mongoose "Validation Error"
+  else if (err instanceof mongoose.Error.ValidationError) {
+    // Extract error messages from validation errors and join them into a single string
+    const message = Object.values(err.errors)
+      .map((val) => val.message)
+      .join(", ");
+    error = new ErrorResponse(message, 400); // Create a custom error response with a "Bad Request" status code
+  }
+  // Handle other types of errors
+  else {
+    // Create a generic error response with the error message, or a default "Server Error" message
+    error = { ...err } as ErrorResponse;
+    error.message = err.message || "Server Error";
+  }
+
+  // Send the appropriate status code and error message in the response
+  res.status(error.statusCode || 500).json({
+    success: false,
+    error: error.message,
+  });
+};
+
+```
+
+And now in `controllers/bootcamps.ts` for catch method we are only passing `next(error)` for error handling and if bootcamp does not found, then we are passing custom ErrorResponse object with message and status code.
+For ex.
+
+```js
+export const getBootCamp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const bootcamp = await Bootcamps.findById(req.params.id);
+    if (!bootcamp) {
+      return next(
+        new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+      );
+    }
+    res.status(200).json({
+      success: true,
+      body: bootcamp,
+    });
+  } catch (error) {
+    // res.status(400).json({
+    //   success: false,
+    // });
+    next(error);
+  }
+};
+```

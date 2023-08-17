@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBootCamp = exports.updateBootCamp = exports.createBootcamp = exports.getBootCamp = exports.getBootCamps = void 0;
 const Bootcamps_1 = __importDefault(require("../models/Bootcamps"));
+const errorResponse_1 = __importDefault(require("../utils/errorResponse"));
 // @desc    Get all Bootcamps
 // @route   GET /api/v1/bootcamps
 // access   Public
@@ -27,9 +28,7 @@ const getBootCamps = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         });
     }
     catch (error) {
-        res.status(400).json({
-            success: false,
-        });
+        next(error);
     }
 });
 exports.getBootCamps = getBootCamps;
@@ -40,9 +39,7 @@ const getBootCamp = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     try {
         const bootcamp = yield Bootcamps_1.default.findById(req.params.id);
         if (!bootcamp) {
-            return res
-                .status(400)
-                .json({ success: false, error: "Bootcamp not found" });
+            return next(new errorResponse_1.default(`Bootcamp not found with id of ${req.params.id}`, 404));
         }
         res.status(200).json({
             success: true,
@@ -50,9 +47,10 @@ const getBootCamp = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     catch (error) {
-        res.status(400).json({
-            success: false,
-        });
+        // res.status(400).json({
+        //   success: false,
+        // });
+        next(error);
     }
 });
 exports.getBootCamp = getBootCamp;
@@ -68,9 +66,7 @@ const createBootcamp = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (error) {
-        res.status(400).json({
-            success: false,
-        });
+        next(error);
     }
 });
 exports.createBootcamp = createBootcamp;
@@ -84,10 +80,7 @@ const updateBootCamp = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             runValidators: true, // mongoose validators
         });
         if (!bootcamp) {
-            return res.status(404).json({
-                success: false,
-                error: "Bootcamp not found",
-            });
+            return next(new errorResponse_1.default(`Bootcamp not found with id of ${req.params.id}`, 404));
         }
         res.status(200).json({
             success: true,
@@ -95,10 +88,7 @@ const updateBootCamp = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (error) {
-        res.status(400).json({
-            success: false,
-            error: "Server error",
-        });
+        next(error);
     }
 });
 exports.updateBootCamp = updateBootCamp;
@@ -109,9 +99,7 @@ const deleteBootCamp = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         const bootcamp = yield Bootcamps_1.default.findByIdAndDelete(req.params.id);
         if (!bootcamp) {
-            return res
-                .status(404)
-                .json({ success: false, error: "Bootcamp not found" });
+            return next(new errorResponse_1.default(`Bootcamp not found with id of ${req.params.id}`, 404));
         }
         res.status(200).json({
             success: true,
@@ -119,10 +107,7 @@ const deleteBootCamp = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (error) {
-        res.status(400).json({
-            success: false,
-            error: "Server error",
-        });
+        next(error);
     }
 });
 exports.deleteBootCamp = deleteBootCamp;
